@@ -31,15 +31,28 @@ spotifyDf = pd.DataFrame(data)
 # timestamp to datetime and playtime to min
 spotifyDf['ts']=pd.to_datetime(spotifyDf['ts'])
 spotifyDf['hours_played']=spotifyDf['ms_played']/1000/60/60
-print(list(spotifyDf.columns.values))
-timeDf=pd.DataFrame(columns=["Year","Month","Morning","Afternoon","Night"])
+timeDf=pd.DataFrame(columns=["Year","Month","Morning","Afternoon","Night","Most Popular","Minutes Listened"])
+
 # create df seperating years, months, days of week
-for year in range(2014,2024):
-    for month in range(1,12):
-        morning=round(sum(spotifyDf['hours_played'][(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.hour<=12) & (spotifyDf.ts.dt.month>=month) & (spotifyDf.ts.dt.month<month+1)]),1)
-        afternoon=round(sum(spotifyDf['hours_played'][(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.hour<=19) & (spotifyDf.ts.dt.hour>12) & (spotifyDf.ts.dt.month>=month) & (spotifyDf.ts.dt.month<month+1)]),1)
-        night=round(sum(spotifyDf['hours_played'][(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.hour<=24) & (spotifyDf.ts.dt.hour>19) & (spotifyDf.ts.dt.month>=month) & (spotifyDf.ts.dt.month<month+1)]),1)
-        list=[year,month,morning,afternoon,night]
+for year in range(2019,2024):
+    print(year)
+    for month in range(1,13):
+        morning=round(sum(spotifyDf['hours_played'][(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.hour<=12) & (spotifyDf.ts.dt.month==month)]),1)
+        afternoon=round(sum(spotifyDf['hours_played'][(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.hour<=19) & (spotifyDf.ts.dt.hour>12) & (spotifyDf.ts.dt.month==month)]),1)
+        night=round(sum(spotifyDf['hours_played'][(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.hour<=24) & (spotifyDf.ts.dt.hour>19) & (spotifyDf.ts.dt.month==month)]),1)
+        # find most popular artist for a given month
+        highestTime=0
+        for name in spotifyDf["master_metadata_album_artist_name"][(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.month==month)].unique():
+            artistTime=sum(spotifyDf["ms_played"][(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.month==month) & (spotifyDf["master_metadata_album_artist_name"]==name)])
+            if artistTime > highestTime:
+                mostPopular=name
+                highestTime=artistTime
+        if highestTime==0:
+            mostPopular="NA"
+        else:
+            highestTime=round(highestTime/1000/60/60,1)
+        print(" "+str(month)+" "+mostPopular+" "+str(highestTime)+" hours")
+        list=[year,month,morning,afternoon,night,mostPopular,highestTime]
         timeDf.loc[len(timeDf)]=list
 # create Time column
 timeDf["Time"]=round(timeDf["Year"]+timeDf["Month"]/12,1)
@@ -50,5 +63,10 @@ timeDf2019.plot.barh(x="Time",y=["Morning","Afternoon","Night"],stacked=True)
 plt.title("Amiri's Listening Distribution")
 plt.xlabel("Hours per Month")
 plt.ylabel("Years")
-plt.locator_params(axis='y',nbins=10)
+ax = plt.gca()
+ax.set_yticks(ax.get_yticks()[::10])
+# add most popular to barchart, WORK ON DIMENSIONS
+for bar, name in zip(ax.patches, timeDf2019["Most Popular"][::3]):
+    ax.text(0.1, bar.get_y()+bar.get_height()/2, name, color = 'black', ha = 'left', va = 'center')
 plt.show()
+
