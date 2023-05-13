@@ -1,2 +1,3 @@
-This repository is a project to help me shake off the Python rust after using R exclusively the past two semesters. It's my friend Amiri's personal Spotify data I'll do exploratory data analysis on.
+This repository is a project to help me shake off the Python rust after using R exclusively the past two semesters. It's my friend Amiri's personal Spotify data I started doing exploratory data analysis on.
 Attached is the [code](https://github.com/lukebeebe/Spotify-Data/blob/main/Amiri%20Analysis.py) and in the [png folder](https://github.com/lukebeebe/Spotify-Data/tree/main/png) is its outputs.
+After some analysis, I figured it'd be better if I could make something for him to do analysis with. So I started making a fun madlibs prompt that takes his inputs of year, month, day to eventually find a specific time where it uses the IP Address to lookup where he was at while listening to the specific song.
