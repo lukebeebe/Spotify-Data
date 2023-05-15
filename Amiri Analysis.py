@@ -70,3 +70,24 @@ for bar, name in zip(ax.patches, timeDf2019["Most Popular"][::3]):
     ax.text(0.1, bar.get_y()+bar.get_height()/2, name, color = 'black', ha = 'left', va = 'center')
 plt.show()
 
+# add location data
+map = folium.Map()
+ipAddr=spotifyDf["ip_addr_decrypted"].unique()
+i=0
+for address in ipAddr:
+    i+=1
+    print(str(i)+"/"+str(len(ipAddr)))
+    info=get_location(address)
+    city=info["city"]
+    lat=info["lat"]
+    long=info["long"]
+    if (lat is None) or (long is None) or (city is None):
+        continue
+    folium.Marker(
+      location=[lat, long],
+      popup=city,
+      ).add_to(map)
+
+map.save(r'/Users/lukebeebe/Desktop/Amiri Data/png/map.html')
+browser=webbrowser.get('safari')
+browser.open(r'/Users/lukebeebe/Desktop/Amiri Data/png/map.html', new=2)
