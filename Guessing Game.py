@@ -16,6 +16,7 @@ def jsonDf(filepaths):
         data+=jsonData
     df=pd.DataFrame(data)
     return df
+
 def getLocation(ip):
     ip_address = ip
     response = requests.get(f'https://ipapi.co/{ip_address}/json/').json()
@@ -26,27 +27,39 @@ def getLocation(ip):
         "country": response.get("country_name")
     }
     return location_data
-def findSong(year, month, day):
-    highestTime=0
-    if year == 0:
-        print(str(len(spotifyDf['master_metadata_album_artist_name'].unique()))+" unique artists")
-        for artist in spotifyDf['master_metadata_album_artist_name'].unique():
-            artistTime=sum(spotifyDf["ms_played"][spotifyDf["master_metadata_album_artist_name"]==artist])
-            print(str(artistTime)+" "+artist)
-        if artistTime>highestTime:
-            mostPopular=artist
-            highestTime=artistTime
-            print(mostPopular+" "+str(artistTime))
-        hours=round(highestTime/1000/60/60,1)
-        print(mostPopular+" "+str(hours)+" hours")
-def guessingGame():
-    print("Welcome to the Guessing Game! ©")
-    time.sleep(1)
-    print("We will provide you with a location ")
-def explore():
-    year, month, day = input("Provide a date in the form '1996:07:26'                         ").split(sep=":")
-    year, month, day = int(year), int(month), int(day)
-    findSong(year, month, day)
+
+def findSong(spotifyDf):
+    artists=spotifyDf['master_metadata_album_artist_name'].unique()
+    times=[]
+    print(str(len(artists))+" unique artists")
+    for artist in artists:
+        time=round(sum(spotifyDf["ms_played"][spotifyDf["master_metadata_album_artist_name"]==artist])/1000/60/60,1)
+        times.append(time)
+    timesArtists=sorted(zip(times,artists),reverse=True)
+    return timesArtists
+
+
+def explore(spotifyDf):
+    year, month, day = 0, 0, 0
+    while (year not in spotifyDf.ts.dt.year.unique()) or (month not in spotifyDf.ts.dt.month.unique() or (day not in spotifyDf.ts.dt.day.unique())):
+        year, month, day = input("Provide a date in the form '1996:07:26'                         ").split(sep=":")
+        print(year+" "+month+" "+day)
+        year, month, day = int(year), int(month), int(day)
+        try:
+            spotifyDf=spotifyDf[(spotifyDf.ts.dt.year==year) and (spotifyDf.ts.dt.month==month) and (spotifyDf.ts.dt.day==day)]
+        except:
+            print("Invalid day or month or year")
+            try:
+                spotifyDf=spotifyDf[(spotifyDf.ts.dt.year==year) and (spotifyDf.ts.dt.month==month)]
+            except:
+                print("Invalid month or year")
+                try:
+                    spotifyDf=spotifyDf[(spotifyDf.ts.dt.year==year)]
+                except:
+                    print("Invalid year")
+    popular=findSong(spotifyDf)
+    print(popular[0:5])
+
 
 
 
@@ -54,16 +67,12 @@ filepaths=["/Users/lukebeebe/Desktop/Amiri Data/endsong_0.json","/Users/lukebeeb
 
 #jsonDf
 spotifyDf=jsonDf(filepaths)
-spotifyDf=spotifyDf['ts',]
+spotifyDf=spotifyDf[["ts","master_metadata_album_artist_name","ms_played","ip_addr_decrypted"]].dropna()
 spotifyDf['ts']=pd.to_datetime(spotifyDf['ts'])
-game=""
-while ("ex" not in game) and ("g" not in game):
-    game=input("Would you like to explore your data or play the Guessing Game?  ").lower()
-    time.sleep(1)
-    if ("ex" not in game) and ("g" not in game):
-        print("Try again")
-        time.sleep(1)
-if "ex" in game:
-    explore()
-else:
-    guessingGame()
+
+print("Welcome to the Guessing Game! ©")
+time.sleep(1)
+print("We will provide you with a location and day.")
+time.sleep(1)
+print("You have three tries to guess an artist you listened to.")
+time.sleep(1)
