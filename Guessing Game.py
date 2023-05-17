@@ -38,7 +38,7 @@ while keepPlaying=="y":
     spotifyDf=spotifyDf[spotifyDf["master_metadata_album_artist_name"]!=remember]
     print("Welcome to the Guessing Game ©")
     time.sleep(1)
-    print("We provide you with a date")
+    print("We provide you with a date and location")
     time.sleep(1)
     print("You name an artist you listened to on that day")
     time.sleep(1)
@@ -50,7 +50,10 @@ while keepPlaying=="y":
     monthName=calendar.month_name[month]
     day=song.ts.dt.day.tolist()[0]
     date=monthName+" "+str(day)+", "+str(year)
-    print(date)
+    locationDict=getLocation(song['ip_addr_decrypted'].values[0])
+    city=locationDict["city"]
+    region=locationDict["region"]
+    print(date+" "+city+", "+region)
     spotifyDf=spotifyDf[(spotifyDf.ts.dt.year==year) & (spotifyDf.ts.dt.month==month) & (spotifyDf.ts.dt.day==day)]
     artists=spotifyDf['master_metadata_album_artist_name'].unique()
     artistString=""
@@ -78,6 +81,7 @@ while keepPlaying=="y":
         print(hint+" was by "+song['master_metadata_album_artist_name'].values[0])
         time.sleep(2)
     print("You could have named:")
+    time.sleep(0.5)
     for artist in artists:
         print(" "+artist)
         time.sleep(0.2)
