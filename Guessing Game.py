@@ -27,16 +27,6 @@ def getLocation(ip):
     }
     return location_data
 
-def findSong(spotifyDf):
-    artists=spotifyDf['master_metadata_album_artist_name'].unique()
-    times=[]
-    print(str(len(artists))+" unique artists")
-    for artist in artists:
-        time=round(sum(spotifyDf["ms_played"][spotifyDf["master_metadata_album_artist_name"]==artist])/1000/60/60,1)
-        times.append(time)
-    timesArtists=sorted(zip(times,artists),reverse=True)
-    return timesArtists
-
 keepPlaying='y'
 while keepPlaying=="y":
     filepaths=["/Users/lukebeebe/Desktop/Amiri Data/endsong_0.json","/Users/lukebeebe/Desktop/Amiri Data/endsong_1.json","/Users/lukebeebe/Desktop/Amiri Data/endsong_2.json","/Users/lukebeebe/Desktop/Amiri Data/endsong_3.json","/Users/lukebeebe/Desktop/Amiri Data/endsong_4.json","/Users/lukebeebe/Desktop/Amiri Data/endsong_5.json","/Users/lukebeebe/Desktop/Amiri Data/endsong_6.json","/Users/lukebeebe/Desktop/Amiri Data/endsong_7.json"]
