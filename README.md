@@ -3,3 +3,4 @@
 - After some analysis, I figured it'd be better if I could make something for him to do analysis with. So I started making a [Mad Libs prompt](https://github.com/lukebeebe/Spotify-Data/blob/main/Song%20and%20Location.py) that takes his inputs of year, month, day to eventually find a specific time where it looks up his location via his IP Address attached to the data.  
 - Now, I'm looking to make a [game](https://github.com/lukebeebe/Spotify-Data/blob/main/Guessing%20Game.py) from the data, where it gives him a location and date and he has to name an artist he was listening to. This is a work in progress.  
 - Update: The game is made. I am now all Spotified out.
+- https://lukebeebe.com/daata/2023/5/17/amiris-spotify-data
